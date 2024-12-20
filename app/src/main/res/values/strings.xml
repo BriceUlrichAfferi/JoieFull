@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Joiefull</string>
+
+    <string name="left_text">Left Text</string>
+    <string name="right_text">Right Text</string>
+    <string name="price_discount">89 €</string>
+    <string name="price_original">120 €</string>
+    <string name="like">24</string>
+    <string name="bags_section_title">Sacs</string>
+    <string name="bottoms_section_title">Bas</string>
+    <string name="tops_section_title">Tops</string>
+    <string name="impression">Partagez ici vos impressions sur cette pièce</string>
+
+</resources>
