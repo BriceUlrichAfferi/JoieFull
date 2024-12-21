@@ -1,5 +1,6 @@
 package com.example.joiefull.presentation.detailProduct
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.Image
 import com.example.joiefull.ui.theme.Orange
@@ -18,12 +19,17 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -58,50 +65,80 @@ import com.example.joiefull.presentation.detailProduct.component.SelectableRound
 import com.example.joiefull.ui.theme.JoiefullTheme
 
 @Composable
-fun DetailProduct (
+fun DetailProduct(
     clothes: Clothes,
     onRatingChanged: (Int) -> Unit,
+    onBackPressed: () -> Unit,
+    onSharePressed: (context: Context) -> Unit,
+
     modifier: Modifier = Modifier,
     isPreview: Boolean = false
 ) {
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var rating by rememberSaveable { mutableStateOf(0) } // Holds the current rating (0-5)
-
-
+    val context = LocalContext.current
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .fillMaxSize() // Ensure the Column takes up the full screen
+            .background(Color.White) // Add background color to cover the entire screen
+            .padding(18.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Image Section
         Box(
             modifier = Modifier
-                .width(328.dp)
-                .height(431.dp)
-        ) {
-            if (isPreview || clothes.picture.url.isEmpty()) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_pacem),
-                    contentDescription = "Bag Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .border(1.dp, Color.Black, shape = RoundedCornerShape(4.dp))
-                        .background(Color.Green)
-                )
-            } else {
-                AsyncImage(
-                    model = clothes.picture.url,
-                    contentDescription = clothes.picture.description,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(12.dp))
-                )
-            }
+                .fillMaxWidth() // Ensure the image section takes full width
+                .height(530.dp) // You can adjust the height as needed
 
+        ) {
+
+           Box( modifier = Modifier
+               .fillMaxWidth()
+               /*.height(431.dp)*/ ) {
+
+               if (isPreview || clothes.picture.url.isEmpty()) {
+                   Image(
+                       painter = painterResource(id = R.drawable.logo_pacem),
+                       contentDescription = "Bag Image",
+                       contentScale = ContentScale.Crop,
+                       modifier = Modifier
+                           .clip(RoundedCornerShape(12.dp))
+                           .border(1.dp, Color.Black, shape = RoundedCornerShape(4.dp))
+                           .background(Color.Green)
+                   )
+               } else {
+                   AsyncImage(
+                       model = clothes.picture.url,
+                       contentDescription = clothes.picture.description,
+                       contentScale = ContentScale.Crop,
+                       modifier = Modifier
+                           .fillMaxWidth()
+                           .clip(RoundedCornerShape(12.dp))
+                   )
+               }
+
+               IconButton(onClick = onBackPressed) {
+                   Icon(Icons.Default.ArrowBack,
+                       contentDescription = "Back",
+                       tint = Color.White)
+               }
+
+               IconButton(
+                   onClick = {
+                       onSharePressed(context) // Pass context to the callback
+                   },
+                   modifier = Modifier.align(Alignment.TopEnd)
+               ) {
+                   Icon(Icons.Default.Share,
+                       contentDescription = "Share",
+                       tint = Color.White,
+                       )
+               }
+
+
+           }
 
             // Overlay Likes
             Surface(
@@ -131,53 +168,43 @@ fun DetailProduct (
         }
 
         // Name and Price Section
-
-        Row (
+        Row(
             modifier = Modifier
-                .width(328.dp)
+                .fillMaxWidth() // Ensure the row takes up the full width
                 .padding(top = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Text(
                 text = clothes.name,
                 fontSize = 14.sp,
                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-
-                modifier = Modifier
-                    .padding(top = 4.dp)
-
+                modifier = Modifier.padding(top = 4.dp)
             )
 
-
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = null,
                     tint = Orange,
-                    modifier = Modifier
-                        .size(20.dp)
+                    modifier = Modifier.size(20.dp)
                 )
 
                 Text(
                     text = "4.6",
                     fontSize = 14.sp,
                     style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
         }
 
         Row(
             modifier = Modifier
-                .width(328.dp)
+                .fillMaxWidth() // Ensure the row takes up the full width
                 .padding(top = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -197,10 +224,10 @@ fun DetailProduct (
             }
         }
 
+        // Product Description Section
         Surface(
             color = Color.White,
-            modifier = Modifier
-                .width(328.dp)
+            modifier = Modifier.fillMaxWidth() // Ensure the surface takes full width
         ) {
             Text(
                 text = "N'hésite pas à me contacter si tu as des questions ou si tu as besoin de clarifications. Je suis convaincu que tu accompliras un excellent travail, et que cette application deviendra une référence en termes d'accessibilité et d'utilité pour nos clients.",
@@ -210,19 +237,18 @@ fun DetailProduct (
             )
         }
 
-
-
-
+        // Rating and Image Selection Section
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(328.dp)
+            modifier = Modifier
+                .fillMaxWidth() // Ensure the row takes full width
                 .padding(8.dp)
         ) {
             // Round Image View
             SelectableRoundImage(
                 imageUri = selectedImageUri,
                 onImageSelected = { uri -> selectedImageUri = uri },
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(37.dp)
             )
 
             // Row for Stars
@@ -237,7 +263,7 @@ fun DetailProduct (
                         contentDescription = "Star $i",
                         tint = if (i <= rating) Color(0xFFFFD700) else Color.Gray, // Gold for selected stars, gray otherwise
                         modifier = Modifier
-                            .size(30.dp)
+                            .size(33.dp)
                             .clickable {
                                 rating = i
                                 onRatingChanged(rating) // Notify about the rating change
@@ -245,13 +271,13 @@ fun DetailProduct (
                     )
                 }
             }
-
         }
 
+        // Review Section
         Surface(
             color = Color.White,
             modifier = Modifier
-                .width(320.dp)
+                .fillMaxWidth() // Ensure the surface takes full width
                 .padding(16.dp)
         ) {
             Box(
@@ -275,13 +301,12 @@ fun DetailProduct (
                         Text(stringResource(R.string.impression))
                     },
                     modifier = Modifier
-                        .width(328.dp)
+                        .fillMaxWidth() // Ensure the TextField takes full width
                         .heightIn(min = 56.dp)
                         .padding(4.dp) // Optional padding inside the border
                 )
             }
         }
-
     }
 }
 
@@ -311,7 +336,9 @@ fun DetailProductPreview() {
             onRatingChanged = { rating ->
                 println("Rating changed to $rating") // Example logging for rating change
             },
-            isPreview = true // This will show the placeholder image
+            isPreview = true, // This will show the placeholder image
+            onBackPressed = {},
+            onSharePressed = {}
         )
     }
 }

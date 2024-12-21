@@ -16,6 +16,7 @@ import com.example.joiefull.ui.theme.JoiefullTheme
 @Composable
 fun BagsRow(
     bags: List<Clothes>,
+    onItemClick: (Clothes) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -25,7 +26,7 @@ fun BagsRow(
         horizontalArrangement = Arrangement.spacedBy(1.dp)
     ) {
         items(bags) { bag ->
-            BagListItem(clothes = bag)
+            BagListItem(clothes = bag, onClick = { onItemClick(bag) })
         }
     }
 }
@@ -57,7 +58,7 @@ fun BagsRowPreview() {
         )
 
         // BagsRow to display the sample list of bags
-        BagsRow(bags = sampleBags)
+  //      BagsRow(bags = sampleBags)
     }
 }
 

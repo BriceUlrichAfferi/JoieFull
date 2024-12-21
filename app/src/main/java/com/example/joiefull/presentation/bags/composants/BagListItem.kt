@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,6 +42,7 @@ import com.example.joiefull.ui.theme.JoiefullTheme
 @Composable
 fun BagListItem(
     clothes: Clothes,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isPreview: Boolean = false
 ) {
@@ -55,6 +57,7 @@ fun BagListItem(
             modifier = Modifier
                 .width(198.dp)
                 .height(198.dp)
+                .clickable { onClick() }
         ) {
             if (isPreview || clothes.picture.url.isEmpty()) {
                 Image(
@@ -159,11 +162,11 @@ fun BagListItemPreview() {
 
     // Using your theme if you have one defined
     JoiefullTheme {
-        BagListItem(
+        /*BagListItem(
             clothes = sampleClothes,
             modifier = Modifier,
             isPreview = true // This will show the placeholder image
-        )
+        )*/
     }
 }
 

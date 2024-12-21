@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.joiefull.presentation.bags.BagsViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.joiefull.R
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
@@ -21,6 +22,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun BagsScreen(
     viewModel: BagsViewModel = koinViewModel(),
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val state = viewModel.bagsState.value
@@ -39,7 +41,12 @@ fun BagsScreen(
             }
             else -> {
                 HomeSection(title = R.string.bags_section_title) {
-                    BagsRow(bags = state.bags)
+                    BagsRow(bags = state.bags, onItemClick = { selectedBag ->
+                        println("Navigating to detail of ${selectedBag.name}")  // Add log statement
+                        navController.navigate("detailProduct/${selectedBag.id}")
+                    })
+
+
                 }
             }
         }
@@ -62,7 +69,7 @@ fun BagsScreenPreview() {
     )
 
     HomeSection(title = R.string.bags_section_title) {
-        BagsRow(bags = sampleBags)
+       // BagsRow(bags = sampleBags)
     }
 }
 

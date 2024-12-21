@@ -3,6 +3,7 @@ package com.example.joiefull.presentation.bottoms.composants
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +44,7 @@ import com.example.joiefull.ui.theme.JoiefullTheme
 @Composable
 fun BottomsListItem(
     clothes: Clothes,
-
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isPreview: Boolean = false
 ) {
@@ -57,7 +58,8 @@ fun BottomsListItem(
         Box(
             modifier = Modifier
                 .width(198.dp)
-                .height(198.dp)
+                .height(230.dp)
+                .clickable { onClick() }
         ) {
             if (isPreview || clothes.picture.url.isEmpty()) {
                 Image(
@@ -165,7 +167,8 @@ fun BagListItemPreview() {
         BottomsListItem(
             clothes = sampleClothes,
             modifier = Modifier,
-            isPreview = true // This will show the placeholder image
-        )
+            isPreview = true, // This will show the placeholder image
+            onClick = {}
+            )
     }
 }

@@ -18,7 +18,7 @@ import com.example.joiefull.ui.theme.JoiefullTheme
 @Composable
 fun BottomsRow (
     bottoms: List<Clothes>,
-
+    onItemClick: (Clothes) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -28,7 +28,7 @@ fun BottomsRow (
         horizontalArrangement = Arrangement.spacedBy(1.dp)
     ) {
         items(bottoms) { bottoms ->
-            BottomsListItem(clothes = bottoms)
+            BottomsListItem(clothes = bottoms,  onClick = { onItemClick(bottoms) })
         }
     }
 }
@@ -60,6 +60,6 @@ fun BagsRowPreview() {
         )
 
         // BagsRow to display the sample list of bags
-        BottomsRow(bottoms = sampleBottoms)
+        //BottomsRow(bottoms = sampleBottoms)
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.joiefull.R
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
@@ -20,8 +21,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BottomsScreen (
-
     viewModel: BottomsViewModel = koinViewModel(),
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     val state = viewModel.bottomsState.value
@@ -40,7 +41,9 @@ fun BottomsScreen (
             }
             else -> {
                 HomeSection(title = R.string.bottoms_section_title) {
-                    BagsRow(bags = state.bottoms)
+                    BottomsRow(bottoms = state.bottoms, onItemClick = { selectedBottom ->
+                        navController.navigate("detailProduct/${selectedBottom.id}")
+                    })
                 }
             }
         }
@@ -63,6 +66,6 @@ fun BagsScreenPreview() {
     )
 
     HomeSection(title = R.string.bags_section_title) {
-        BagsRow(bags = sampleBottoms)
+        //BottomsRow(bottoms = sampleBottoms)
     }
 }
