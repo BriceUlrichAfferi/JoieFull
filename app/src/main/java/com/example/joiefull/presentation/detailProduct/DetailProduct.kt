@@ -71,6 +71,7 @@ fun DetailProduct(
     onBackPressed: () -> Unit,
     onSharePressed: (context: Context) -> Unit,
 
+
     modifier: Modifier = Modifier,
     isPreview: Boolean = false
 ) {

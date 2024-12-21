@@ -1,6 +1,8 @@
 package com.example.joiefull.common
 
+import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +19,6 @@ import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.repository.ClothesRepository
 import com.example.joiefull.presentation.detailProduct.DetailProduct
 import com.example.joiefull.presentation.home.HomeScreen
-import org.koin.java.KoinJavaComponent.inject
 
 @Composable
 fun NavigationGraph(navController: NavController, clothesRepository: ClothesRepository) {
@@ -34,6 +35,7 @@ fun NavigationGraph(navController: NavController, clothesRepository: ClothesRepo
             "detailProduct/{clothesId}",
             arguments = listOf(navArgument("clothesId") { type = NavType.IntType })
         ) { backStackEntry ->
+
             val clothesId = backStackEntry.arguments?.getInt("clothesId") ?: return@composable
 
             // Using a state to store the fetched clothes data
@@ -49,32 +51,40 @@ fun NavigationGraph(navController: NavController, clothesRepository: ClothesRepo
                 }
             }
 
+            // Define the share callback here
+            val onSharePressed: (Context) -> Unit = { context ->
+                val productLink = clothes.value?.picture?.url
+
+                // Check if the product link is null or not
+                if (productLink != null) {
+                    val shareText = "Check out this amazing product: ${clothes.value?.name} for ${clothes.value?.price} €\n\n${clothes.value?.picture?.description}\n\n$productLink"
+
+                    val shareIntent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, shareText)
+                        type = "text/plain"
+                    }
+
+                    val chooserIntent = Intent.createChooser(shareIntent, "Share via")
+                    context.startActivity(chooserIntent)
+                } else {
+                    Toast.makeText(context, "No product link available", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+
             // Display the DetailProduct or error message based on the fetched clothes
             if (clothes.value != null) {
-                DetailProduct(clothes = clothes.value!!, onRatingChanged = { rating ->
-                    // Handle rating change logic
-                },
+                DetailProduct(
+                    clothes = clothes.value!!,
+                    onRatingChanged = { rating ->
+                        // Handle rating change logic
+                    },
                     onBackPressed = {
                         navController.popBackStack() // Navigate back to the previous screen
                     },
-                    onSharePressed = { context ->
-                        // Share logic
-                        val shareText = "Check out this amazing product: ${clothes.value?.name} for ${clothes.value?.price} €\n\n${clothes.value?.picture?.description}"
-
-                        // Create an intent to share the product details
-                        val shareIntent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, shareText)
-                            type = "text/plain"
-                        }
-
-                        // Let the user choose the app to share with
-                        val chooserIntent = Intent.createChooser(shareIntent, "Share via")
-
-                        // Use the passed context to start the activity
-                        context.startActivity(chooserIntent)
-                    }
-                    )
+                    onSharePressed = onSharePressed // Pass the share logic
+                )
             } else {
                 Text("Error: Product not found!")
             }
