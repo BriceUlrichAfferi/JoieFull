@@ -60,7 +60,7 @@ fun SelectableRoundImage(
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(48.dp)
             )
         }
     }

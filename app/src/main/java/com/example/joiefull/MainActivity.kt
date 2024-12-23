@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.compose.rememberNavController
 import com.example.joiefull.common.NavigationGraph
 import com.example.joiefull.features.animation.AnimatedSplashScreen
 import com.example.joiefull.features.domain.repository.ClothesRepository
 import com.example.joiefull.ui.theme.JoiefullTheme
 import org.koin.android.ext.android.inject
-
 
 class MainActivity : ComponentActivity() {
 
@@ -25,27 +25,23 @@ class MainActivity : ComponentActivity() {
         setContent {
             JoiefullTheme {
                 AnimatedSplashScreen {
-                    // Initialize NavController here
                     val navController = rememberNavController()
 
-                    // Wrap in Scaffold to handle padding
+                    // Check if the device is a tablet based on screen width
+                    val isTablet = LocalConfiguration.current.screenWidthDp >= 600
+
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        // Using a Box to stack components if necessary
                         Box(modifier = Modifier.padding(innerPadding)) {
-                            // NavigationGraph for navigation handling
-                            NavigationGraph(navController = navController, clothesRepository = clothesRepository)
+                            // Pass the 'isTablet' flag to NavigationGraph
+                            NavigationGraph(
+                                navController = navController,
+                                clothesRepository = clothesRepository,
+                                isTablet = isTablet
+                            )
                         }
                     }
-
                 }
             }
         }
     }
 }
-
-
-
-
-
-
-

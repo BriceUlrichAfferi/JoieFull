@@ -10,5 +10,28 @@
     <string name="bottoms_section_title">Bas</string>
     <string name="tops_section_title">Tops</string>
     <string name="impression">Partagez ici vos impressions sur cette pièce</string>
+    <string name="reviews">N\'hésite pas à me contacter si tu as
+        des questions ou si tu as besoin de clarifications.
+        Je suis convaincu que tu accompliras un excellent travail,
+        et que cette application deviendra une référence en termes
+        d\'accessibilité et d\'utilité pour nos clients.</string>
+
+    <string name="action_toggle_favorite">To mark as favorite </string>
+    <string name="action_home_item">To get details </string>
+    <string name="action_profil_picture">To choose and set your profile picture from your gallery </string>
+    <string name="action_set_star">To star the item </string>
+    <string name="action_share">To share item </string>
+    <string name="action_back">To go back to home page </string>
+
+
+
+
+    <string name="navigate_up">Navigate up</string>
+    <string name="share">Share %1$s</string>
+
+
+
+
+
 
 </resources>

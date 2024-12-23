@@ -28,6 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -59,12 +61,17 @@ fun TopsListItem(
             modifier = Modifier
                 .width(198.dp)
                 .height(198.dp)
-                .clickable { onClick() }
+                .clickable(
+                    onClick = onClick,
+                    onClickLabel = stringResource(R.string.action_home_item)
+                )
+                .semantics(mergeDescendants = true) {}
+
         ) {
             if (isPreview || clothes.picture.url.isEmpty()) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_pacem),
-                    contentDescription = "Bag Image",
+                    contentDescription = "Default Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
@@ -97,7 +104,7 @@ fun TopsListItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = null,
+                        contentDescription = "Favorite",
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
@@ -122,7 +129,8 @@ fun TopsListItem(
         Row(
             modifier = Modifier
                 .width(198.dp)
-                .padding(top = 4.dp),
+                .padding(top = 4.dp)
+                .semantics(mergeDescendants = true) {},
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -144,7 +152,6 @@ fun TopsListItem(
 }
 
 
-
 @Preview(showBackground = true, name = "Bag List Item Preview")
 @Composable
 fun BagListItemPreview() {
@@ -164,10 +171,12 @@ fun BagListItemPreview() {
 
     // Using your theme if you have one defined
     JoiefullTheme {
-        /*TopsListItem(
+        TopsListItem(
             clothes = sampleClothes,
+            onClick = {}, // Provide an empty lambda for onClick in preview
             modifier = Modifier,
             isPreview = true // This will show the placeholder image
-        )*/
+        )
     }
 }
+

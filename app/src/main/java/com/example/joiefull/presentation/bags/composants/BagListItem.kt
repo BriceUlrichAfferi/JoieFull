@@ -22,6 +22,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -32,8 +34,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.joiefull.R
+import com.example.joiefull.common.LikesViewModel
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
 import com.example.joiefull.ui.theme.JoiefullTheme
@@ -44,8 +48,16 @@ fun BagListItem(
     clothes: Clothes,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    likesViewModel: LikesViewModel = viewModel(),
     isPreview: Boolean = false
 ) {
+// Get likes for the specific item (clothes.id)
+    val likes = likesViewModel.getLikesForItem(clothes.id)
+
+    val totalLikes = remember(likes.value) {
+        clothes.likes + likes.value
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -99,7 +111,7 @@ fun BagListItem(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "${clothes.likes}",
+                        text = "$totalLikes",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )

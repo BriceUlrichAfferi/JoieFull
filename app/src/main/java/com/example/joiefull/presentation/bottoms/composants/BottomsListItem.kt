@@ -48,6 +48,7 @@ fun BottomsListItem(
     modifier: Modifier = Modifier,
     isPreview: Boolean = false
 ) {
+
     Column(
         modifier = modifier
             .fillMaxWidth()

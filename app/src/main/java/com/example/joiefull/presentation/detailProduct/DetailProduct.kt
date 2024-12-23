@@ -2,6 +2,7 @@ package com.example.joiefull.presentation.detailProduct
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import com.example.joiefull.ui.theme.Orange
 
@@ -24,10 +25,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -58,11 +64,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.joiefull.R
+import com.example.joiefull.common.LikesViewModel
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
 import com.example.joiefull.presentation.bags.composants.BagListItem
 import com.example.joiefull.presentation.detailProduct.component.SelectableRoundImage
 import com.example.joiefull.ui.theme.JoiefullTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun DetailProduct(
@@ -70,15 +78,29 @@ fun DetailProduct(
     onRatingChanged: (Int) -> Unit,
     onBackPressed: () -> Unit,
     onSharePressed: (context: Context) -> Unit,
-
-
+    viewModel: LikesViewModel = viewModel(), // Correct ViewModel initialization
     modifier: Modifier = Modifier,
     isPreview: Boolean = false
 ) {
+    val context = LocalContext.current
+    val likes by viewModel.getLikesForItem(clothes.id) // Get likes for this specific item
+    val isLiked by viewModel.isLiked(clothes.id) // Get liked status for this specific item
+    val totalLikes by remember {
+        derivedStateOf { clothes.likes + likes }
+    }
+    var textFieldValue by rememberSaveable { mutableStateOf("") }
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var rating by rememberSaveable { mutableStateOf(0) } // Holds the current rating (0-5)
-    val context = LocalContext.current
+    val shareText = stringResource(R.string.share, clothes.name)
+
+    // Helper function to show toast messages
+    fun showToast(message: String, context: Context) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+
+
     Column(
         modifier = modifier
             .fillMaxSize() // Ensure the Column takes up the full screen
@@ -92,76 +114,96 @@ fun DetailProduct(
             modifier = Modifier
                 .fillMaxWidth() // Ensure the image section takes full width
                 .height(530.dp) // You can adjust the height as needed
-
+                //.semantics(mergeDescendants = true) {}
         ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                if (isPreview || clothes.picture.url.isEmpty()) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_pacem),
+                        contentDescription = "Bag Image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(1.dp, Color.Black, shape = RoundedCornerShape(4.dp))
+                            .background(Color.Green)
+                    )
+                } else {
+                    AsyncImage(
+                        model = clothes.picture.url,
+                        contentDescription = clothes.picture.description,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                }
 
-           Box( modifier = Modifier
-               .fillMaxWidth()
-               /*.height(431.dp)*/ ) {
+                IconButton(onClick = onBackPressed) {
+                    Icon(Icons.Default.ArrowBack,
+                        contentDescription = stringResource(
+                            R.string.navigate_up
+                        ),
+                        tint = Color.White,
+                        modifier = Modifier.size(48.dp)
+                            .clickable(
+                                onClick = { onBackPressed },
+                                onClickLabel = stringResource(R.string.action_profil_picture)
+                            )
+                    )
+                }
 
-               if (isPreview || clothes.picture.url.isEmpty()) {
-                   Image(
-                       painter = painterResource(id = R.drawable.logo_pacem),
-                       contentDescription = "Bag Image",
-                       contentScale = ContentScale.Crop,
-                       modifier = Modifier
-                           .clip(RoundedCornerShape(12.dp))
-                           .border(1.dp, Color.Black, shape = RoundedCornerShape(4.dp))
-                           .background(Color.Green)
-                   )
-               } else {
-                   AsyncImage(
-                       model = clothes.picture.url,
-                       contentDescription = clothes.picture.description,
-                       contentScale = ContentScale.Crop,
-                       modifier = Modifier
-                           .fillMaxWidth()
-                           .clip(RoundedCornerShape(12.dp))
-                   )
-               }
-
-               IconButton(onClick = onBackPressed) {
-                   Icon(Icons.Default.ArrowBack,
-                       contentDescription = "Back",
-                       tint = Color.White)
-               }
-
-               IconButton(
-                   onClick = {
-                       onSharePressed(context) // Pass context to the callback
-                   },
-                   modifier = Modifier.align(Alignment.TopEnd)
-               ) {
-                   Icon(Icons.Default.Share,
-                       contentDescription = "Share",
-                       tint = Color.White,
-                       )
-               }
-
-
-           }
+                IconButton(onClick = { onSharePressed(context) }, modifier = Modifier.align(Alignment.TopEnd)) {
+                    Icon(Icons.Default.Share,
+                        contentDescription = stringResource(R.string.share, clothes.name),
+                        tint = Color.White,
+                        modifier = Modifier.size(48.dp)
+                            .clickable(
+                                onClick = { onSharePressed },
+                                onClickLabel = stringResource(R.string.action_profil_picture)
+                            ))
+                }
+            }
 
             // Overlay Likes
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(14.dp),
+                    .padding(14.dp)
+                    .clickable(
+                        onClickLabel = stringResource(R.string.action_toggle_favorite)
+                    ) {
+                        // Toggle the liked state and update likes count using ViewModel
+                        if (isLiked) {
+                            viewModel.decrementLikes(clothes.id)
+                            showToast(
+                                "${clothes.name} removed from favorite",
+                                context
+                            ) // Show toast when removed
+                        } else {
+                            viewModel.incrementLikes(clothes.id)
+                            showToast(
+                                "${clothes.name} added to favorite",
+                                context
+                            ) // Show toast when added
+                        }
+                    },
                 shape = RoundedCornerShape(12.dp),
                 color = Color.White,
                 contentColor = Color.Black
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
+                        imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite Icon",
+                        modifier = Modifier.size(30.dp),
+                        tint = if (isLiked) Color.Red else Color.Black
                     )
                     Text(
-                        text = "${clothes.likes}",
-                        fontSize = 12.sp,
+                        text = "$totalLikes", // Show updated likes count
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -189,7 +231,7 @@ fun DetailProduct(
             ) {
                 Icon(
                     imageVector = Icons.Default.Star,
-                    contentDescription = null,
+                    contentDescription = "Stars",
                     tint = Orange,
                     modifier = Modifier.size(20.dp)
                 )
@@ -206,7 +248,8 @@ fun DetailProduct(
         Row(
             modifier = Modifier
                 .fillMaxWidth() // Ensure the row takes up the full width
-                .padding(top = 4.dp),
+                .padding(top = 4.dp)
+                .semantics(mergeDescendants = true) {},
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -215,6 +258,7 @@ fun DetailProduct(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
+
             if (clothes.price != clothes.original_price) {
                 Text(
                     text = "${clothes.original_price} €",
@@ -231,9 +275,10 @@ fun DetailProduct(
             modifier = Modifier.fillMaxWidth() // Ensure the surface takes full width
         ) {
             Text(
-                text = "N'hésite pas à me contacter si tu as des questions ou si tu as besoin de clarifications. Je suis convaincu que tu accompliras un excellent travail, et que cette application deviendra une référence en termes d'accessibilité et d'utilité pour nos clients.",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
+                text = "${clothes.picture.description} ",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W400,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(2.dp) // Inner padding
             )
         }
@@ -241,15 +286,23 @@ fun DetailProduct(
         // Rating and Image Selection Section
         Row(
             verticalAlignment = Alignment.CenterVertically,
+
             modifier = Modifier
                 .fillMaxWidth() // Ensure the row takes full width
                 .padding(8.dp)
+               // .semantics(mergeDescendants = true) {}
+
         ) {
             // Round Image View
             SelectableRoundImage(
                 imageUri = selectedImageUri,
                 onImageSelected = { uri -> selectedImageUri = uri },
-                modifier = Modifier.size(37.dp)
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable(
+                        onClick = {  },
+                        onClickLabel = stringResource(R.string.action_profil_picture)
+                    )
             )
 
             // Row for Stars
@@ -264,8 +317,9 @@ fun DetailProduct(
                         contentDescription = "Star $i",
                         tint = if (i <= rating) Color(0xFFFFD700) else Color.Gray, // Gold for selected stars, gray otherwise
                         modifier = Modifier
-                            .size(33.dp)
-                            .clickable {
+                            .size(30.dp)
+                            .clickable ( onClickLabel = stringResource(R.string.action_set_star)
+                            ) {
                                 rating = i
                                 onRatingChanged(rating) // Notify about the rating change
                             }
@@ -290,8 +344,8 @@ fun DetailProduct(
                     )
             ) {
                 TextField(
-                    value = "",
-                    onValueChange = {},
+                    value = textFieldValue,
+                    onValueChange = { newValue -> textFieldValue = newValue },
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -308,8 +362,47 @@ fun DetailProduct(
                 )
             }
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(2.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally, // Center the items horizontally
+                modifier = Modifier
+                    .align(Alignment.CenterEnd) // Align the content to the end if needed
+                    .clickable {
+                        if (textFieldValue.isNotEmpty()) {
+                            showToast("Review added!", context)
+                            textFieldValue = "" // Clear the TextField
+                            rating = 0 // Reset the rating
+                            selectedImageUri = null // Reset the selected image
+                        } else {
+                            showToast("Please write a review before sending.", context)
+                        }
+                    }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Send,
+                    contentDescription = null,
+                    tint = Color.Gray,
+                    modifier = Modifier.size(48.dp) // Adjust icon size
+                )
+                Text(
+                    text = "Send",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp), // Add spacing between icon and text
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+
+
+
     }
 }
+
 
 
 @Preview(showBackground = true, name = "Bag List Item Preview")

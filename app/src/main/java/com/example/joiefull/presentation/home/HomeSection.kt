@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.paddingFromBaseline
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 
 // HomeSection composable
@@ -26,6 +28,7 @@ fun HomeSection(
             modifier = Modifier
                 .paddingFromBaseline(top = 40.dp, bottom = 4.dp)
                 .padding(horizontal = 18.dp)
+                .semantics { heading() },
         )
         content()
     }
