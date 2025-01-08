@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.joiefull.features.domain.model.Clothes
@@ -24,7 +26,10 @@ fun TopsRow (
     LazyRow(
         modifier = modifier
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(4.dp)
+            .semantics(mergeDescendants = true) {
+                contentDescription = "Row of top clothing items"
+            },
         horizontalArrangement = Arrangement.spacedBy(1.dp)
     ) {
         items(tops) { tops ->

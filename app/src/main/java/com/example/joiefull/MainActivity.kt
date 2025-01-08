@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.compose.rememberNavController
@@ -20,23 +22,22 @@ class MainActivity : ComponentActivity() {
 
     private val clothesRepository: ClothesRepository by inject() // Injecting the repository
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             JoiefullTheme {
                 AnimatedSplashScreen {
                     val navController = rememberNavController()
-
-                    // Check if the device is a tablet based on screen width
-                    val isTablet = LocalConfiguration.current.screenWidthDp >= 600
+                    val windowSizeClass = calculateWindowSizeClass(this)
 
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         Box(modifier = Modifier.padding(innerPadding)) {
-                            // Pass the 'isTablet' flag to NavigationGraph
+                            // Pass the 'windowSizeClass' to NavigationGraph
                             NavigationGraph(
                                 navController = navController,
                                 clothesRepository = clothesRepository,
-                                isTablet = isTablet
+                                windowSizeClass = windowSizeClass
                             )
                         }
                     }

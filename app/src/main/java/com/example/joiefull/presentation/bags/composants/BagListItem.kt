@@ -29,6 +29,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -54,22 +57,28 @@ fun BagListItem(
 // Get likes for the specific item (clothes.id)
     val likes = likesViewModel.getLikesForItem(clothes.id)
 
-    val totalLikes = remember(likes.value) {
+    val totalLikes = rememberSaveable(likes.value) {
         clothes.likes + likes.value
     }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
-             horizontalAlignment = Alignment.Start
-    ) {
+            .padding(horizontal = 12.dp)
+        .semantics(mergeDescendants = true) {
+        contentDescription = "Bag item: ${clothes.name}, Price: ${clothes.price} €"
+    },
+        horizontalAlignment = Alignment.Start
+    ){
         // Image Section
         Box(
             modifier = Modifier
                 .width(198.dp)
                 .height(198.dp)
-                .clickable { onClick() }
+                .clickable(
+                    onClick = onClick,
+                    onClickLabel = "View details for ${clothes.name}"
+                )
         ) {
             if (isPreview || clothes.picture.url.isEmpty()) {
                 Image(
@@ -91,12 +100,14 @@ fun BagListItem(
                 )
             }
 
-
             // Overlay Likes
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(4.dp),
+                    .padding(4.dp)
+                    .semantics {
+                        contentDescription = "Likes for ${clothes.name}: $totalLikes"
+                    },
                 shape = RoundedCornerShape(8.dp),
                 color = Color.White,
                 contentColor = Color.Black
@@ -109,11 +120,12 @@ fun BagListItem(
                         imageVector = Icons.Default.FavoriteBorder,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
+
                     )
                     Text(
                         text = "$totalLikes",
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
@@ -124,17 +136,18 @@ fun BagListItem(
             text = clothes.name,
             fontSize = 14.sp,
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-
             modifier = Modifier
                 .padding(top = 4.dp)
-
+                .semantics {contentDescription = "${clothes.name}"
+                }
         )
         Row(
             modifier = Modifier
                 .width(198.dp)
                 .padding(top = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+
         ) {
             Text(
                 text = "${clothes.price} €",
@@ -174,11 +187,12 @@ fun BagListItemPreview() {
 
     // Using your theme if you have one defined
     JoiefullTheme {
-        /*BagListItem(
+        BagListItem(
             clothes = sampleClothes,
             modifier = Modifier,
-            isPreview = true // This will show the placeholder image
-        )*/
+            isPreview = true,
+            onClick = {},
+        )
     }
 }
 

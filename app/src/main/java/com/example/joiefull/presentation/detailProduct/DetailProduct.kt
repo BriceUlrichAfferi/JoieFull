@@ -2,6 +2,7 @@ package com.example.joiefull.presentation.detailProduct
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import com.example.joiefull.ui.theme.Orange
@@ -55,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -78,113 +80,92 @@ fun DetailProduct(
     onRatingChanged: (Int) -> Unit,
     onBackPressed: () -> Unit,
     onSharePressed: (context: Context) -> Unit,
-    viewModel: LikesViewModel = viewModel(), // Correct ViewModel initialization
+    viewModel: LikesViewModel = viewModel(),
     modifier: Modifier = Modifier,
     isPreview: Boolean = false
 ) {
     val context = LocalContext.current
-    val likes by viewModel.getLikesForItem(clothes.id) // Get likes for this specific item
-    val isLiked by viewModel.isLiked(clothes.id) // Get liked status for this specific item
+    val likes by viewModel.getLikesForItem(clothes.id)
+    val isLiked by viewModel.isLiked(clothes.id)
     val totalLikes by remember {
         derivedStateOf { clothes.likes + likes }
     }
     var textFieldValue by rememberSaveable { mutableStateOf("") }
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
-    var rating by rememberSaveable { mutableStateOf(0) } // Holds the current rating (0-5)
+    var rating by rememberSaveable { mutableStateOf(0) }
     val shareText = stringResource(R.string.share, clothes.name)
 
-    // Helper function to show toast messages
     fun showToast(message: String, context: Context) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-
-
     Column(
-        modifier = modifier
-            .fillMaxSize() // Ensure the Column takes up the full screen
-            .background(Color.White) // Add background color to cover the entire screen
+        Modifier
+            .fillMaxSize()
+            .background(Color.White)
             .padding(18.dp)
-            .verticalScroll(rememberScrollState()),
+            .verticalScroll(rememberScrollState())
+            .semantics(mergeDescendants = true) {
+                contentDescription = "Details for ${clothes.name}"
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Image Section
         Box(
             modifier = Modifier
-                .fillMaxWidth() // Ensure the image section takes full width
-                .height(530.dp) // You can adjust the height as needed
-                //.semantics(mergeDescendants = true) {}
+                .fillMaxWidth()
+                .height(530.dp)
         ) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                if (isPreview || clothes.picture.url.isEmpty()) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_pacem),
-                        contentDescription = "Bag Image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .border(1.dp, Color.Black, shape = RoundedCornerShape(4.dp))
-                            .background(Color.Green)
-                    )
-                } else {
-                    AsyncImage(
-                        model = clothes.picture.url,
-                        contentDescription = clothes.picture.description,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                    )
-                }
-
-                IconButton(onClick = onBackPressed) {
-                    Icon(Icons.Default.ArrowBack,
-                        contentDescription = stringResource(
-                            R.string.navigate_up
-                        ),
-                        tint = Color.White,
-                        modifier = Modifier.size(48.dp)
-                            .clickable(
-                                onClick = { onBackPressed },
-                                onClickLabel = stringResource(R.string.action_profil_picture)
-                            )
-                    )
-                }
-
-                IconButton(onClick = { onSharePressed(context) }, modifier = Modifier.align(Alignment.TopEnd)) {
-                    Icon(Icons.Default.Share,
-                        contentDescription = stringResource(R.string.share, clothes.name),
-                        tint = Color.White,
-                        modifier = Modifier.size(48.dp)
-                            .clickable(
-                                onClick = { onSharePressed },
-                                onClickLabel = stringResource(R.string.action_profil_picture)
-                            ))
-                }
+            if (isPreview || clothes.picture.url.isEmpty()) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo_pacem),
+                    contentDescription = "Bag Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(1.dp, Color.Black, shape = RoundedCornerShape(4.dp))
+                        .background(Color.Green)
+                )
+            } else {
+                AsyncImage(
+                    model = clothes.picture.url,
+                    contentDescription = clothes.picture.description,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                )
             }
 
-            // Overlay Likes
+            IconButton(onClick = onBackPressed) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.navigate_up),
+                    tint = Color.White,
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+
+            IconButton(onClick = { onSharePressed(context) }, modifier = Modifier.align(Alignment.TopEnd)) {
+                Icon(
+                    Icons.Default.Share,
+                    contentDescription = stringResource(R.string.share, clothes.name),
+                    tint = Color.White,
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(14.dp)
-                    .clickable(
-                        onClickLabel = stringResource(R.string.action_toggle_favorite)
-                    ) {
-                        // Toggle the liked state and update likes count using ViewModel
+                    .clickable(onClickLabel = stringResource(R.string.action_toggle_favorite)) {
                         if (isLiked) {
                             viewModel.decrementLikes(clothes.id)
-                            showToast(
-                                "${clothes.name} removed from favorite",
-                                context
-                            ) // Show toast when removed
+                            showToast("${clothes.name} removed from favorite", context)
                         } else {
                             viewModel.incrementLikes(clothes.id)
-                            showToast(
-                                "${clothes.name} added to favorite",
-                                context
-                            ) // Show toast when added
+                            showToast("${clothes.name} added to favorite", context)
                         }
                     },
                 shape = RoundedCornerShape(12.dp),
@@ -202,7 +183,7 @@ fun DetailProduct(
                         tint = if (isLiked) Color.Red else Color.Black
                     )
                     Text(
-                        text = "$totalLikes", // Show updated likes count
+                        text = "$totalLikes",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )

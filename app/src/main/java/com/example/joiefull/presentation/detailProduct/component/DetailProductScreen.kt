@@ -1,12 +1,17 @@
 package com.example.joiefull.presentation.detailProduct.component
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.fillMaxSize
 
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.navigation.NavController
 import com.example.joiefull.common.ShareDialog
 import com.example.joiefull.common.getClothesById
@@ -18,8 +23,9 @@ import com.example.joiefull.presentation.detailProduct.DetailProduct
 fun DetailProductScreen(
     navController: NavController,
     clothesRepository: ClothesRepository,
+    clothesId: Int,
     modifier: Modifier = Modifier,
-    clothesId: Int
+    windowSizeClass: WindowSizeClass
 ) {
     val clothes = rememberSaveable { mutableStateOf<Clothes?>(null) }
     val showDialog = rememberSaveable { mutableStateOf(false) }
@@ -55,9 +61,19 @@ fun DetailProductScreen(
                 } else {
                     Toast.makeText(context, "No product link available", Toast.LENGTH_SHORT).show()
                 }
-            }
+            },
+            modifier = modifier
+                .then(if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) Modifier.fillMaxSize() else Modifier)
+                .semantics(mergeDescendants = true) {
+                    contentDescription = "Product details for ${clothes.value?.name}"
+                }
         )
     } else {
-        Text("Error: Product not found!")
+        Text(
+            text = "Error: Product not found!",
+            modifier = Modifier.semantics {
+                contentDescription = "Error message: Product not found"
+            }
+        )
     }
 }

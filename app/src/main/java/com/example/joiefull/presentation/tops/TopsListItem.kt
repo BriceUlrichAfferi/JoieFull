@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -53,7 +54,10 @@ fun TopsListItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 12.dp)
+            .semantics(mergeDescendants = true) {
+                contentDescription = "Top item: ${clothes.name}, Price: ${clothes.price} €"
+            },
         horizontalAlignment = Alignment.Start
     ) {
         // Image Section
@@ -71,7 +75,7 @@ fun TopsListItem(
             if (isPreview || clothes.picture.url.isEmpty()) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_pacem),
-                    contentDescription = "Default Image",
+                    contentDescription = "Default Image for ${clothes.name}",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
@@ -81,7 +85,7 @@ fun TopsListItem(
             } else {
                 AsyncImage(
                     model = clothes.picture.url,
-                    contentDescription = clothes.picture.description,
+                    contentDescription = "Image of ${clothes.name}: ${clothes.picture.description}",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                         .clip(RoundedCornerShape(12.dp))
@@ -93,7 +97,10 @@ fun TopsListItem(
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(4.dp),
+                    .padding(4.dp)
+                    .semantics {
+                        contentDescription = "Likes for ${clothes.name}: ${clothes.likes}"
+                    },
                 shape = RoundedCornerShape(8.dp),
                 color = Color.White,
                 contentColor = Color.Black
@@ -104,7 +111,7 @@ fun TopsListItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite",
+                        contentDescription = "Favorite button for ${clothes.name}",
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
@@ -121,16 +128,19 @@ fun TopsListItem(
             text = clothes.name,
             fontSize = 14.sp,
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-
             modifier = Modifier
                 .padding(top = 4.dp)
+                .semantics {contentDescription = "${clothes.name}"
+                }
 
         )
         Row(
             modifier = Modifier
                 .width(198.dp)
                 .padding(top = 4.dp)
-                .semantics(mergeDescendants = true) {},
+                .semantics(mergeDescendants = true) {
+                    contentDescription = "Price information for ${clothes.name}"
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

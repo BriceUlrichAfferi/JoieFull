@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.joiefull.presentation.bags.BagsViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,16 +29,24 @@ fun BagsScreen(
 ) {
     val state = viewModel.bagsState.value
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()
+                            .semantics {
+                            contentDescription = "Bags section"
+        }
+    ) {
         when {
             state.isLoading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center).semantics {
+                    contentDescription = "Loading bags"
+                })
             }
             state.error.isNotEmpty() -> {
                 Text(
                     text = state.error,
                     color = Color.Red,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center).semantics {
+                        contentDescription = "Error: ${state.error}"
+                    }
                 )
             }
             else -> {
@@ -69,7 +79,10 @@ fun BagsScreenPreview() {
     )
 
     HomeSection(title = R.string.bags_section_title) {
-       // BagsRow(bags = sampleBags)
+      BagsRow(bags = sampleBags,
+          onItemClick = {}
+
+      )
     }
 }
 

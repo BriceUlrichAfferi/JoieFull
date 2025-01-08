@@ -28,6 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -52,7 +54,10 @@ fun BottomsListItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 12.dp)
+            .semantics(mergeDescendants = true) {
+                contentDescription = "Bottoms item: ${clothes.name}, Price: ${clothes.price} €"
+            },
         horizontalAlignment = Alignment.Start
     ) {
         // Image Section
@@ -115,9 +120,10 @@ fun BottomsListItem(
             text = clothes.name,
             fontSize = 14.sp,
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-
             modifier = Modifier
                 .padding(top = 4.dp)
+                .semantics {contentDescription = "${clothes.name}"
+                }
 
         )
         Row(

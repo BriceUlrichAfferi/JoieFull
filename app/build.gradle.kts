@@ -105,6 +105,8 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.5.2") // Add this to explicitly use the latest animation library
     implementation("androidx.compose.material:material-icons-extended:1.5.2")
 
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
+
 
     implementation("androidx.compose.material3:material3:1.3.1")
     implementation("androidx.compose.material3:material3-window-size-class:1.3.1")

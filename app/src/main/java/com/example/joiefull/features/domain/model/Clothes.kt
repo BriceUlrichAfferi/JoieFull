@@ -5,7 +5,7 @@ import java.io.Serializable
 
 data class Clothes(
     val id: Int,
-    val picture: Pictures, // Use the correct class name here
+    val picture: Pictures,
     val name: String,
     val category: String,
     var likes: Int,

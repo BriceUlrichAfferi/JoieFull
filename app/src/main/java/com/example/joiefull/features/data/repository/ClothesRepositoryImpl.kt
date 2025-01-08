@@ -17,7 +17,6 @@ class ClothesRepositoryImpl(private val apiService: ClothesApiService) :
             cachedClothesList = it // Cache the list
         }
     }
-    // Fetch all clothes from the API
 
 
     // Fetch a specific clothes item by ID

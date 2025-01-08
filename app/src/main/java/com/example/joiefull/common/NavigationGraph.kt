@@ -15,44 +15,46 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun NavigationGraph(
-    navController: NavController,
+    navController: NavHostController,
     clothesRepository: ClothesRepository,
-    isTablet: Boolean // Receive 'isTablet' as a parameter
+    windowSizeClass: WindowSizeClass
 ) {
     NavHost(
-        navController = navController as NavHostController,
+        navController = navController,
         startDestination = "home"
     ) {
         composable("home") {
-            if (isTablet) {
-                // On tablet, show HomeScreen and DetailProductScreen side by side
-                val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                val homeScreenWidth = (screenWidth.value * 0.6).dp.coerceAtMost(screenWidth)
+            when (windowSizeClass.widthSizeClass) {
+                WindowWidthSizeClass.Compact -> {
+                    HomeScreen(navController = navController)
+                }
+                WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded -> {
+                    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+                    val homeScreenWidth = (screenWidth.value * 0.6).dp.coerceAtMost(screenWidth)
 
-                // Home screen with DetailProduct only if a product is selected
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    HomeScreen(navController = navController, modifier = Modifier.fillMaxHeight().width(homeScreenWidth))
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        HomeScreen(navController = navController, modifier = Modifier.fillMaxHeight().width(homeScreenWidth))
 
-                    // Only show DetailProductScreen if a product is selected
-                    val selectedProductId = navController.currentBackStackEntry?.arguments?.getInt("clothesId")
-                    if (selectedProductId != null) {
-                        DetailProductScreen(
-                            navController = navController,
-                            clothesRepository = clothesRepository,
-                            clothesId = selectedProductId,
-                            modifier = Modifier.fillMaxHeight().weight(1f)
-                        )
+                        val selectedProductId = navController.currentBackStackEntry?.arguments?.getInt("clothesId")
+                        if (selectedProductId != null) {
+                            DetailProductScreen(
+                                navController = navController,
+                                clothesRepository = clothesRepository,
+                                clothesId = selectedProductId,
+                                windowSizeClass = windowSizeClass,
+                                modifier = Modifier.fillMaxHeight().weight(1f)
+                            )
+                        }
                     }
                 }
-            } else {
-                // On phone, just display HomeScreen
-                HomeScreen(navController = navController)
             }
         }
 
@@ -61,27 +63,30 @@ fun NavigationGraph(
             arguments = listOf(navArgument("clothesId") { type = NavType.IntType })
         ) { backStackEntry ->
             val clothesId = backStackEntry.arguments?.getInt("clothesId") ?: return@composable
-            if (isTablet) {
-                val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                val homeScreenWidth = (screenWidth.value * 0.6).dp.coerceAtMost(screenWidth)
-
-                // On tablet, show HomeScreen and DetailProductScreen side by side
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    HomeScreen(navController = navController, modifier = Modifier.fillMaxHeight().width(homeScreenWidth))
+            when (windowSizeClass.widthSizeClass) {
+                WindowWidthSizeClass.Compact -> {
                     DetailProductScreen(
                         navController = navController,
                         clothesRepository = clothesRepository,
                         clothesId = clothesId,
-                        modifier = Modifier.fillMaxHeight().weight(2f)
+                        windowSizeClass = windowSizeClass
                     )
                 }
-            } else {
-                // On phone, show just DetailProductScreen
-                DetailProductScreen(
-                    navController = navController,
-                    clothesRepository = clothesRepository,
-                    clothesId = clothesId
-                )
+                WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded -> {
+                    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+                    val homeScreenWidth = (screenWidth.value * 0.6).dp.coerceAtMost(screenWidth)
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        HomeScreen(navController = navController, modifier = Modifier.fillMaxHeight().width(homeScreenWidth))
+                        DetailProductScreen(
+                            navController = navController,
+                            clothesRepository = clothesRepository,
+                            clothesId = clothesId,
+                            windowSizeClass = windowSizeClass,
+                            modifier = Modifier.fillMaxHeight().weight(2f)
+                        )
+                    }
+                }
             }
         }
     }

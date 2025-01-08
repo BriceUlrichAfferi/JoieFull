@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -25,16 +27,26 @@ fun TopsScreen (
 ) {
     val state = viewModel.topsState.value
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()
+        .semantics {
+            contentDescription = "Tops section"
+        }) {
         when {
             state.isLoading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)
+                    .semantics {
+                        contentDescription = "Loading tops"
+                    }
+                )
             }
             state.error.isNotEmpty() -> {
                 Text(
                     text = state.error,
                     color = Color.Red,
                     modifier = Modifier.align(Alignment.Center)
+                        .semantics {
+                            contentDescription = "Error: ${state.error}"
+                        }
                 )
             }
             else -> {
