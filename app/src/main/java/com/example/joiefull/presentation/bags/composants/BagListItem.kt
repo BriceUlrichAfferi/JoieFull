@@ -1,9 +1,7 @@
 package com.example.joiefull.presentation.bags.composants
 
-import android.graphics.Picture
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,28 +20,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.joiefull.R
 import com.example.joiefull.common.LikesViewModel
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
 import com.example.joiefull.ui.theme.JoiefullTheme
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
@@ -51,15 +49,17 @@ fun BagListItem(
     clothes: Clothes,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    likesViewModel: LikesViewModel = viewModel(),
+    likesViewModel: LikesViewModel = koinViewModel(),
+
     isPreview: Boolean = false
 ) {
 // Get likes for the specific item (clothes.id)
-    val likes = likesViewModel.getLikesForItem(clothes.id)
+    val likes = likesViewModel.getLikesForItem(clothes.id).collectAsState(initial = 0)
 
-    val totalLikes = rememberSaveable(likes.value) {
-        clothes.likes + likes.value
+    val totalLikes by remember {
+        derivedStateOf { clothes.likes + likes.value }
     }
+
 
     Column(
         modifier = modifier
@@ -118,7 +118,7 @@ fun BagListItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = null,
+                        contentDescription = "Favorite",
                         modifier = Modifier.size(16.dp)
 
                     )
@@ -151,6 +151,7 @@ fun BagListItem(
         ) {
             Text(
                 text = "${clothes.price} €",
+
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -180,12 +181,11 @@ fun BagListItemPreview() {
         category = "",
         id = 1,
         picture = Pictures(
-            url = "", // Empty URL to trigger the placeholder image
+            url = "",
             description = "A stylish sample bag"
         )
     )
 
-    // Using your theme if you have one defined
     JoiefullTheme {
         BagListItem(
             clothes = sampleClothes,

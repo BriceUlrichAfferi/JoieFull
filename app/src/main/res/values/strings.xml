@@ -24,14 +24,9 @@
     <string name="action_back">To go back to home page </string>
 
 
-
-
     <string name="navigate_up">Go back to previous screen</string>
     <string name="share">Share %1$s</string>
-
-
-
-
+    <string name="profile_pic">\"Set your profil picture\"</string>
 
 
 </resources>

@@ -2,7 +2,6 @@ package com.example.joiefull.presentation.detailProduct
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import com.example.joiefull.ui.theme.Orange
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,11 +26,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,8 +37,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -53,7 +51,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -69,11 +66,9 @@ import com.example.joiefull.R
 import com.example.joiefull.common.LikesViewModel
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
-import com.example.joiefull.presentation.bags.composants.BagListItem
 import com.example.joiefull.presentation.detailProduct.component.SelectableRoundImage
 import com.example.joiefull.ui.theme.JoiefullTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
-
 @Composable
 fun DetailProduct(
     clothes: Clothes,
@@ -85,23 +80,23 @@ fun DetailProduct(
     isPreview: Boolean = false
 ) {
     val context = LocalContext.current
-    val likes by viewModel.getLikesForItem(clothes.id)
-    val isLiked by viewModel.isLiked(clothes.id)
+    val likes by viewModel.getLikesForItem(clothes.id).collectAsState(initial = 0)
+    val isLiked by viewModel.isLiked(clothes.id).collectAsState(initial = false)
+
     val totalLikes by remember {
         derivedStateOf { clothes.likes + likes }
     }
     var textFieldValue by rememberSaveable { mutableStateOf("") }
 
     var selectedImageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
-    var rating by rememberSaveable { mutableStateOf(0) }
-    val shareText = stringResource(R.string.share, clothes.name)
+    var rating by rememberSaveable { mutableIntStateOf(0) }
 
     fun showToast(message: String, context: Context) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     Column(
-        Modifier
+       modifier = modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(18.dp)
@@ -194,7 +189,7 @@ fun DetailProduct(
         // Name and Price Section
         Row(
             modifier = Modifier
-                .fillMaxWidth() // Ensure the row takes up the full width
+                .fillMaxWidth()
                 .padding(top = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -228,7 +223,7 @@ fun DetailProduct(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth() // Ensure the row takes up the full width
+                .fillMaxWidth()
                 .padding(top = 4.dp)
                 .semantics(mergeDescendants = true) {},
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -253,14 +248,14 @@ fun DetailProduct(
         // Product Description Section
         Surface(
             color = Color.White,
-            modifier = Modifier.fillMaxWidth() // Ensure the surface takes full width
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = "${clothes.picture.description} ",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W400,
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(2.dp) // Inner padding
+                modifier = Modifier.padding(2.dp)
             )
         }
 
@@ -269,9 +264,8 @@ fun DetailProduct(
             verticalAlignment = Alignment.CenterVertically,
 
             modifier = Modifier
-                .fillMaxWidth() // Ensure the row takes full width
+                .fillMaxWidth()
                 .padding(8.dp)
-               // .semantics(mergeDescendants = true) {}
 
         ) {
             // Round Image View
@@ -296,13 +290,13 @@ fun DetailProduct(
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = "Star $i",
-                        tint = if (i <= rating) Color(0xFFFFD700) else Color.Gray, // Gold for selected stars, gray otherwise
+                        tint = if (i <= rating) Color(0xFFFFD700) else Color.Gray,
                         modifier = Modifier
                             .size(30.dp)
                             .clickable ( onClickLabel = stringResource(R.string.action_set_star)
                             ) {
                                 rating = i
-                                onRatingChanged(rating) // Notify about the rating change
+                                onRatingChanged(rating)
                             }
                     )
                 }
@@ -313,15 +307,15 @@ fun DetailProduct(
         Surface(
             color = Color.White,
             modifier = Modifier
-                .fillMaxWidth() // Ensure the surface takes full width
+                .fillMaxWidth()
                 .padding(16.dp)
         ) {
             Box(
                 modifier = Modifier
                     .border(
-                        width = 1.dp, // Border width
-                        color = Color.Gray, // Border color
-                        shape = RoundedCornerShape(12.dp) // Optional: Rounded corners
+                        width = 1.dp,
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(12.dp)
                     )
             ) {
                 TextField(
@@ -330,16 +324,16 @@ fun DetailProduct(
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedIndicatorColor = Color.Transparent, // Remove internal underline
-                        unfocusedIndicatorColor = Color.Transparent // Remove internal underline
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     ),
                     placeholder = {
                         Text(stringResource(R.string.impression))
                     },
                     modifier = Modifier
-                        .fillMaxWidth() // Ensure the TextField takes full width
+                        .fillMaxWidth()
                         .heightIn(min = 56.dp)
-                        .padding(4.dp) // Optional padding inside the border
+                        .padding(4.dp)
                 )
             }
         }
@@ -350,15 +344,15 @@ fun DetailProduct(
                 .padding(2.dp)
         ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally, // Center the items horizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .align(Alignment.CenterEnd) // Align the content to the end if needed
+                    .align(Alignment.CenterEnd)
                     .clickable {
                         if (textFieldValue.isNotEmpty()) {
                             showToast("Review added!", context)
-                            textFieldValue = "" // Clear the TextField
-                            rating = 0 // Reset the rating
-                            selectedImageUri = null // Reset the selected image
+                            textFieldValue = ""
+                            rating = 0
+                            selectedImageUri = null
                         } else {
                             showToast("Please write a review before sending.", context)
                         }
@@ -368,18 +362,16 @@ fun DetailProduct(
                     imageVector = Icons.Default.Send,
                     contentDescription = null,
                     tint = Color.Gray,
-                    modifier = Modifier.size(48.dp) // Adjust icon size
+                    modifier = Modifier.size(48.dp)
                 )
                 Text(
                     text = "Send",
                     color = Color.Gray,
-                    modifier = Modifier.padding(top = 4.dp), // Add spacing between icon and text
+                    modifier = Modifier.padding(top = 4.dp),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
         }
-
-
 
     }
 }
@@ -398,20 +390,19 @@ fun DetailProductPreview() {
         category = "",
         id = 1,
         picture = Pictures(
-            url = "", // Empty URL to trigger the placeholder image
+            url = "",
             description = "A stylish sample bag"
         )
     )
 
-    // Using your theme if you have one defined
     JoiefullTheme {
         DetailProduct(
             clothes = sampleClothes,
             modifier = Modifier,
             onRatingChanged = { rating ->
-                println("Rating changed to $rating") // Example logging for rating change
+                println("Rating changed to $rating")
             },
-            isPreview = true, // This will show the placeholder image
+            isPreview = true,
             onBackPressed = {},
             onSharePressed = {}
         )

@@ -56,9 +56,6 @@ fun BagsRowPreview() {
                 original_price = 79.99
             )
         )
-
-        // BagsRow to display the sample list of bags
-  //      BagsRow(bags = sampleBags)
     }
 }
 

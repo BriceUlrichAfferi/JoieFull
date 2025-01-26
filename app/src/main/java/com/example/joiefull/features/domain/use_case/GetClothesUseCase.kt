@@ -7,16 +7,14 @@ import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
 
-class GetClothesUseCase @Inject constructor(
-    private val repository: ClothesRepository
-) {
+class GetClothesUseCase(private val repository: ClothesRepository) : KoinComponent {
 
-    operator fun invoke(): Flow<Resource<List<Clothes>>> = flow {
+    operator fun invoke(clotheId: Int): Flow<Resource<Clothes>> = flow {
         try {
             emit(Resource.Loading())
-            val clothes = repository.getClothes()
+            val clothes = repository.getClothesById(clotheId)
             emit(Resource.Success(clothes))
         } catch (e: HttpException) {
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))

@@ -9,13 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.joiefull.R
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
 import com.example.joiefull.presentation.home.HomeSection
-import com.example.joiefull.presentation.bags.composants.BagsRow
 import com.example.joiefull.presentation.bottoms.BottomsViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,7 +39,7 @@ fun BottomsScreen (
             }
             else -> {
                 HomeSection(title = R.string.bottoms_section_title) {
-                    BottomsRow(bottoms = state.bottoms, onItemClick = { selectedBottom ->
+                    BottomsRow(bottoms = state.clothes, onItemClick = { selectedBottom ->
                         navController.navigate("detailProduct/${selectedBottom.id}")
                     })
                 }
@@ -66,6 +64,5 @@ fun BagsScreenPreview() {
     )
 
     HomeSection(title = R.string.bags_section_title) {
-        //BottomsRow(bottoms = sampleBottoms)
     }
 }

@@ -12,7 +12,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.joiefull.presentation.bags.BagsViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.joiefull.R
 import com.example.joiefull.features.domain.model.Clothes
@@ -24,6 +23,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun BagsScreen(
     viewModel: BagsViewModel = koinViewModel(),
+
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -51,7 +51,7 @@ fun BagsScreen(
             }
             else -> {
                 HomeSection(title = R.string.bags_section_title) {
-                    BagsRow(bags = state.bags, onItemClick = { selectedBag ->
+                    BagsRow(bags = state.clothes, onItemClick = { selectedBag ->
                         println("Navigating to detail of ${selectedBag.name}")  // Add log statement
                         navController.navigate("detailProduct/${selectedBag.id}")
                     })

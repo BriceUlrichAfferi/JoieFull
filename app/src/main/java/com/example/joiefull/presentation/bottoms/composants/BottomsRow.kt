@@ -11,8 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
-import com.example.joiefull.presentation.bags.composants.BagListItem
-import com.example.joiefull.presentation.bags.composants.BagsRow
 import com.example.joiefull.ui.theme.JoiefullTheme
 
 @Composable
@@ -59,7 +57,5 @@ fun BagsRowPreview() {
             )
         )
 
-        // BagsRow to display the sample list of bags
-        //BottomsRow(bottoms = sampleBottoms)
     }
 }

@@ -4,40 +4,37 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.joiefull.common.Constants
+import com.example.joiefull.common.ClothesState
 import com.example.joiefull.common.Resource
 import com.example.joiefull.features.domain.use_case.GetBottomsUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
 class BottomsViewModel (
     private val getBottomsUseCase: GetBottomsUseCase
 ) : ViewModel() {
 
-    private val _bottomsState = mutableStateOf(BottomsState())
-    val bottomsState: State<BottomsState> = _bottomsState
+    private val _bottomsState = mutableStateOf(ClothesState())
+    val bottomsState: State<ClothesState> = _bottomsState
 
 
     init {
-        getBottoms(Constants.PARAM_BOTTOM_CATEGORY)
+        getBottoms()
     }
 
-
-    private fun getBottoms(bottomsCategory: String) {
-        getBottomsUseCase(bottomsCategory).onEach { result ->
+    private fun getBottoms() {
+        getBottomsUseCase().onEach { result ->
             when (result){
                 is  Resource.Success -> {
-                    _bottomsState.value = BottomsState(bottoms = result.data ?: emptyList())
+                    _bottomsState.value = ClothesState(clothes = result.data ?: emptyList())
                 }
                 is Resource.Error -> {
-                    _bottomsState.value = BottomsState(
+                    _bottomsState.value = ClothesState(
                         error = result.message ?: "An unexpected error occured"
                     )
                 }
                 is Resource.Loading -> {
-                    _bottomsState.value = BottomsState(isLoading = true)
+                    _bottomsState.value = ClothesState(isLoading = true)
                 }
 
             }

@@ -11,19 +11,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.joiefull.ui.theme.Orange
+import com.example.joiefull.R
 
 @Composable
 fun SelectableRoundImage(
@@ -57,7 +55,7 @@ fun SelectableRoundImage(
 
             Icon(
                 imageVector = Icons.Default.Person,
-                contentDescription = null,
+                contentDescription = stringResource(id = R.string.profile_pic) ,
                 tint = Color.White,
                 modifier = Modifier
                     .size(48.dp)

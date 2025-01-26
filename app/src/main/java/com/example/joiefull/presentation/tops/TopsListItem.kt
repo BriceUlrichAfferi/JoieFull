@@ -22,6 +22,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,25 +43,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.joiefull.R
+import com.example.joiefull.common.LikesViewModel
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
-import com.example.joiefull.presentation.bottoms.composants.BottomsListItem
 import com.example.joiefull.ui.theme.JoiefullTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TopsListItem(
     clothes: Clothes,
     onClick: () -> Unit,
+    likesViewModel: LikesViewModel = koinViewModel(),
     modifier: Modifier = Modifier,
     isPreview: Boolean = false
 ) {
+    val likes = likesViewModel.getLikesForItem(clothes.id).collectAsState(initial = 0)
+
+    val totalLikes by remember {
+        derivedStateOf { clothes.likes + likes.value }
+    }
+
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
-            .semantics(mergeDescendants = true) {
-                contentDescription = "Top item: ${clothes.name}, Price: ${clothes.price} €"
-            },
+            .padding(horizontal = 12.dp),
         horizontalAlignment = Alignment.Start
     ) {
         // Image Section
@@ -85,7 +95,7 @@ fun TopsListItem(
             } else {
                 AsyncImage(
                     model = clothes.picture.url,
-                    contentDescription = "Image of ${clothes.name}: ${clothes.picture.description}",
+                    contentDescription = "Image of ${clothes.name}",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                         .clip(RoundedCornerShape(12.dp))
@@ -99,7 +109,7 @@ fun TopsListItem(
                     .align(Alignment.BottomEnd)
                     .padding(4.dp)
                     .semantics {
-                        contentDescription = "Likes for ${clothes.name}: ${clothes.likes}"
+                        contentDescription = "Likes for ${clothes.name}: $totalLikes"
                     },
                 shape = RoundedCornerShape(8.dp),
                 color = Color.White,
@@ -111,11 +121,11 @@ fun TopsListItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite button for ${clothes.name}",
+                        contentDescription = "Favorite for ${clothes.name}",
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "${clothes.likes}",
+                        text = "$totalLikes",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -174,18 +184,18 @@ fun BagListItemPreview() {
         category = "",
         id = 1,
         picture = Pictures(
-            url = "", // Empty URL to trigger the placeholder image
+            url = "",
             description = "A stylish sample bag"
         )
     )
 
-    // Using your theme if you have one defined
+
     JoiefullTheme {
         TopsListItem(
             clothes = sampleClothes,
-            onClick = {}, // Provide an empty lambda for onClick in preview
+            onClick = {},
             modifier = Modifier,
-            isPreview = true // This will show the placeholder image
+            isPreview = true
         )
     }
 }

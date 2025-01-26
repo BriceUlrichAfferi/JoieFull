@@ -6,14 +6,11 @@ import com.example.joiefull.features.domain.repository.ClothesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
 import retrofit2.HttpException
 
-class GetBottomsUseCase @Inject constructor(
-    private val repository: ClothesRepository
-) {
-
-    operator fun invoke(bottomsCategory: String): Flow<Resource<List<Clothes>>> = flow {
+class GetBottomsUseCase(private val repository: ClothesRepository) : KoinComponent {
+    operator fun invoke(): Flow<Resource<List<Clothes>>> = flow {
         try {
             emit(Resource.Loading())
             val clothes = repository.getClothesByCategory("BOTTOMS")
@@ -25,5 +22,3 @@ class GetBottomsUseCase @Inject constructor(
         }
     }
 }
-
-

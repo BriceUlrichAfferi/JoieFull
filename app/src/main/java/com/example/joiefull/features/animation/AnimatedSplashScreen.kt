@@ -25,23 +25,23 @@ fun AnimatedSplashScreen(content: @Composable () -> Unit) {
 
     // Trigger the animation sequence
     LaunchedEffect(Unit) {
-        delay(1000) // Keep the first image for 1 second before transitioning
+        delay(1000)
         showFirstImage = false
-        delay(1500) // Duration of the transition (same as zoom out duration)
+        delay(1500)
         animationCompleted = true
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         // First Image Zoom Out (initially visible)
         ZoomingImage(
-            imageRes = R.drawable.icon_app_splash, // Replace with your first image
-            zoomScale = 1.5f, // Adjust zoom scale
-            durationMillis = 1500 // Adjust duration
+            imageRes = R.drawable.icon_app_splash,
+            zoomScale = 1.5f,
+            durationMillis = 1500
         )
 
-        // Second Image Fade In (starts fading immediately)
+        // Second Image Fade In
         AnimatedVisibility(
-            visible = !showFirstImage, // Show the second image as soon as the first one starts fading
+            visible = !showFirstImage,
             enter = fadeIn(animationSpec = tween(durationMillis = 800)),
             exit = fadeOut()
         ) {
@@ -51,14 +51,14 @@ fun AnimatedSplashScreen(content: @Composable () -> Unit) {
                     .zIndex(0f),
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
-                painter = painterResource(id = R.drawable.icon_splash), // Replace with your second image
+                painter = painterResource(id = R.drawable.icon_splash),
                 contentDescription = "Second Splash Screen Image"
             )
         }
     }
 
     if (animationCompleted) {
-        content() // Show the main content after splash screen
+        content()
     }
 }
 
@@ -66,7 +66,6 @@ fun AnimatedSplashScreen(content: @Composable () -> Unit) {
 fun ZoomingImage(imageRes: Int, zoomScale: Float, durationMillis: Int) {
     var scale by remember { mutableStateOf(zoomScale) }
 
-    // Start with zoomScale and animate to 1f (zoom out)
     LaunchedEffect(Unit) {
         animate(
             initialValue = zoomScale,

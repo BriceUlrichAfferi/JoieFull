@@ -10,7 +10,7 @@ import com.example.joiefull.R
 import androidx.compose.ui.text.googlefonts.Font as GoogleFont
 import androidx.compose.ui.text.googlefonts.GoogleFont as GoogleGoogleFont
 
-// Define Open Sans font family using Google Fonts
+// Defines Open Sans font family using Google Fonts
 val OpenSans = FontFamily(
     GoogleFont(
         googleFont = GoogleGoogleFont("Open Sans"),
@@ -42,7 +42,7 @@ val OpenSans = FontFamily(
     )
 )
 
-// Define default Material Typography and include both fonts
+// Defines default Material Typography and include both fonts
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default, // Old default font

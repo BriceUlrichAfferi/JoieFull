@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.joiefull.R
 import com.example.joiefull.features.domain.model.Clothes
@@ -51,7 +50,7 @@ fun TopsScreen (
             }
             else -> {
                 HomeSection(title = R.string.tops_section_title) {
-                    TopsRow(tops = state.tops, onItemClick = { selectedTop ->
+                    TopsRow(tops = state.clothes, onItemClick = { selectedTop ->
                         navController.navigate("detailProduct/${selectedTop.id}")
                     })
                 }

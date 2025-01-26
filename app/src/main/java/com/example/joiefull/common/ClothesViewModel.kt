@@ -1,47 +1,39 @@
 package com.example.joiefull.common
 
 import GetClothesUseCase
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.joiefull.features.domain.model.Clothes
-import com.example.joiefull.presentation.bags.BagsState
-import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
-
-class ClothesViewModel (
+class ClothesViewModel(
     private val getClothesUseCase: GetClothesUseCase
 ) : ViewModel() {
 
-    private val _clothesState = mutableStateOf<List<Clothes>>(emptyList())
-    val clothesState: State<List<Clothes>> = _clothesState
+    private val _clothesState = MutableStateFlow<Clothes?>(null)
+    val clothesState: StateFlow<Clothes?> = _clothesState
 
+    private val _currentClotheId = mutableStateOf<Int?>(null)
 
-    init {
-        loadClothes()
-    }
-
-    private fun loadClothes() {
-        getClothesUseCase().onEach { result ->
+    fun loadClothes(clotheId: Int) {
+        _currentClotheId.value = clotheId
+        getClothesUseCase(clotheId).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _clothesState.value = result.data ?: emptyList()
+                    _clothesState.value = result.data
                 }
                 is Resource.Error -> {
-                    // Handle the error
+                    // Handle error
+                    _clothesState.value = null
                 }
                 is Resource.Loading -> {
-                    // Show loading state
+                    // Optionally handle loading state
                 }
             }
         }.launchIn(viewModelScope)
-    }
-
-    fun getClothesById(id: Int): Clothes? {
-        return _clothesState.value.find { it.id == id }
     }
 }

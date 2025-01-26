@@ -47,7 +47,6 @@ fun NavigationGraph(
                         if (selectedProductId != null) {
                             DetailProductScreen(
                                 navController = navController,
-                                clothesRepository = clothesRepository,
                                 clothesId = selectedProductId,
                                 windowSizeClass = windowSizeClass,
                                 modifier = Modifier.fillMaxHeight().weight(1f)
@@ -67,7 +66,6 @@ fun NavigationGraph(
                 WindowWidthSizeClass.Compact -> {
                     DetailProductScreen(
                         navController = navController,
-                        clothesRepository = clothesRepository,
                         clothesId = clothesId,
                         windowSizeClass = windowSizeClass
                     )
@@ -80,7 +78,6 @@ fun NavigationGraph(
                         HomeScreen(navController = navController, modifier = Modifier.fillMaxHeight().width(homeScreenWidth))
                         DetailProductScreen(
                             navController = navController,
-                            clothesRepository = clothesRepository,
                             clothesId = clothesId,
                             windowSizeClass = windowSizeClass,
                             modifier = Modifier.fillMaxHeight().weight(2f)

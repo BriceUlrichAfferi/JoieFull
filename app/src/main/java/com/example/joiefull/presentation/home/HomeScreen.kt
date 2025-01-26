@@ -22,7 +22,7 @@ fun HomeScreen (navController: NavController, modifier: Modifier = Modifier) {
         Spacer(Modifier.height(16.dp))
             TopsScreen(navController = navController)
             BottomsScreen(navController = navController)
-        BagsScreen(navController = navController)
+            BagsScreen(navController = navController)
         Spacer(Modifier.height(16.dp))
     }
 }

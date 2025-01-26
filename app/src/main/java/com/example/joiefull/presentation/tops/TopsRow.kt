@@ -7,14 +7,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
-import com.example.joiefull.presentation.bottoms.composants.BottomsListItem
-import com.example.joiefull.presentation.bottoms.composants.BottomsRow
 import com.example.joiefull.ui.theme.JoiefullTheme
 
 @Composable
@@ -26,10 +22,7 @@ fun TopsRow (
     LazyRow(
         modifier = modifier
             .fillMaxWidth()
-            .padding(4.dp)
-            .semantics(mergeDescendants = true) {
-                contentDescription = "Row of top clothing items"
-            },
+            .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(1.dp)
     ) {
         items(tops) { tops ->
@@ -63,8 +56,5 @@ fun BagsRowPreview() {
                 original_price = 79.99
             )
         )
-
-        // BagsRow to display the sample list of bags
-       // TopsRow(tops = sampleTops)
     }
 }
