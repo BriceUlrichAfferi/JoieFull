@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,6 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -41,7 +43,9 @@ import com.example.joiefull.common.LikesViewModel
 import com.example.joiefull.features.domain.model.Clothes
 import com.example.joiefull.features.domain.model.Pictures
 import com.example.joiefull.ui.theme.JoiefullTheme
+import com.example.joiefull.ui.theme.Orange
 import org.koin.androidx.compose.koinViewModel
+import kotlin.math.min
 
 
 @Composable
@@ -132,15 +136,45 @@ fun BagListItem(
         }
 
         // Name and Price Section
-        Text(
-            text = clothes.name,
-            fontSize = 14.sp,
-            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+        Row(
             modifier = Modifier
-                .padding(top = 4.dp)
-                .semantics {contentDescription = "${clothes.name}"
-                }
-        )
+                .width(198.dp)
+                .padding(top = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = clothes.name,
+                fontSize = 14.sp,
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .width(120.dp) // Adjust this width based on your design needs
+                    .semantics { contentDescription = clothes.name },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Stars",
+                    tint = Orange,
+                    modifier = Modifier.size(20.dp)
+                )
+
+                Text(
+                    text = "3.7",
+                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        }
+
         Row(
             modifier = Modifier
                 .width(198.dp)
