@@ -17,7 +17,7 @@
 <h3 align="center">JoieFull</h3>
 
   <p align="center">
-    The Android app JoieFull Online Purchasing
+    The Android app JoieFull for Online Purchasing
   </p>
 </div>
 
