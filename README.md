@@ -23,7 +23,6 @@
 
 ### Built With
 
-* ![android]
 * ![kotlin]
 * ![androidstudio]
 * ![gradle]
