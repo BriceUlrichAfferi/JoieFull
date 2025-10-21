@@ -27,8 +27,6 @@
 * ![androidstudio]
 * ![gradle]
 
-<!-- GETTING STARTED -->
-## Getting Started
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
